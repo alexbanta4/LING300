@@ -7,6 +7,7 @@ Created on Mon Feb 24 19:29:24 2020
 """
 import matplotlib.pyplot as plt
 import numpy as np
+import random
 
 
 # List of touples that are of the form ('Name', height, parent-height)
@@ -16,7 +17,7 @@ groups1 = [('A', 0.05, 0.06), ('D', 0.06, 0.21), ('K', 0.21, 0.22), ('P', 0.22, 
 # May want to define a second set of groups once we figure out the alternative likeihoods
 
 # Data that will be used, data of type (object number, 'Group')
-data = [(1, 'D'), (2, 'P'), (1, 'GG')]
+data = [(1, 'D'), (2, 'K'), (1, 'M')]
 # Maybe create function to take an object number and give it the right group label
 
 # Check which hypothesis data is consistent with 
@@ -42,6 +43,33 @@ def data_is_consistent_with_hypothesis(data_point):
     elif data_point == 'GG':
         return ['GG', 'JJ']
     
+def hypothesis_is_consistent_with_data(hypothesis): 
+    # Return list of data "groups" that are consistent with hypothesis
+    if hypothesis == 'A':
+        return ['A']
+    elif hypothesis == 'D':
+        return ['A', 'D']
+    elif hypothesis == 'K':
+        return ['A', 'D', 'K']
+    elif hypothesis == 'P':
+        return ['A', 'D', 'K', 'P']
+    elif hypothesis == 'M':
+        return ['M']
+    elif hypothesis == 'R':
+        return ['A', 'D', 'K', 'P', 'M']
+    elif hypothesis == 'Z':
+        return ['A', 'D', 'K', 'P', 'M', 'Z']
+    elif hypothesis == 'AA':
+        return ['A', 'D', 'K', 'P', 'M', 'Z', 'AA']
+    elif hypothesis == 'DD':
+        return ['A', 'D', 'K', 'P', 'M', 'Z', 'AA', 'DD']
+    elif hypothesis == 'II':
+        return ['A', 'D', 'K', 'P', 'M', 'Z', 'AA', 'DD', 'II']
+    elif hypothesis == 'GG':
+        return ['A', 'D', 'K', 'P', 'M', 'Z', 'AA', 'DD', 'GG']
+    elif hypothesis == 'JJ':
+        return ['A', 'D', 'K', 'P', 'M', 'Z', 'AA', 'DD', 'GG', 'II']
+    
 def Plausible_Hypotheses(data, groups): # Creates a list of plausible hypotheses  
     # hypotheses have the form ('Name', height, parentheight)
     hypotheses = []
@@ -56,20 +84,70 @@ def Plausible_Hypotheses(data, groups): # Creates a list of plausible hypotheses
     return hypotheses
             
     
-def Literal_probability(data, hypothesis): # The classic probability function
-    return 0
+def Literal_probability(data, groups): # The classic probability function
+    Pl_h_d = Posteriors(data, groups, 0)
+    return Pl_h_d
     # (1/size(h))^n + P(h)/sum of all possible hypotheses
+    # Where Pl_h_d is P_L(h|d)
     
 def Literal_likelihood(data, hypothesis): # Create literal likelihood
     n = len(data)
     likelihood = (1/hypothesis[1])**n
     return likelihood
+
+def Possible_data(N, hypotheses):
+    # Create a list of lists of possible datasets that could give rise to these hypotheses
+    # I will not create all possible datasets because that would be way to many
+    # I will create three possible datasets for each hypothesis?
+    dataset = []
+    if N == 1:
+        dataset = [[(1, 'A')], [(2, 'D')], [(3, 'K')], [(4, 'P')], [(5,'M')], [(6,'Z')],\
+                   [(7,'AA')], [(8, 'DD')], [(9, 'GG')], [(10, 'II')]]
+    else:
+        counter = 10
+        for h in hypotheses:
+            selection = hypothesis_is_consistent_with_data(h[0])
+            for s in list(range(0,counter)):
+                s = []
+                for n in list(range(0, N)):
+                    s.append((n, selection[random.randrange(len(selection))]))
+                    if s not in dataset:
+                        dataset.append(s)
+    return dataset
     
     
-def Pragmatic_Likelihood(data, hypothesis): # Calculate the pragmatically reasoned liklihood
+def Pragmatic_Likelihood(data, hypotheses, groups, N): # Calculate the pragmatically reasoned liklihood
     # literal probability of h|data/ sum over all hypotheses -> do we add a prior
     # and what is it?
-    return 0
+    # N is the number of datapoints in the data given
+    
+    # Find all possible datasets and put them in a list of lists; As a proxy
+    # I'll go with there are only three possible datasets
+    poss_data = Possible_data(N, hypotheses)
+    if data not in poss_data:
+        poss_data.append(data)
+    
+    Pt_d_h = {} # Where Ps_d_h is Pt(d|h)
+    
+    #Create normalizing dictionary 
+    normalizing_dict = {}
+    for h in hypotheses:
+        normalizing_dict[h[0]] = 0
+    
+    # Creating the normalizing constant for each hypothesis
+    for data_set in poss_data:
+        lit_post = Literal_probability(data_set, groups)
+        for h in hypotheses:
+            if h[0] in lit_post:
+                normalizing_dict[h[0]] = normalizing_dict[h[0]]+lit_post[h[0]]
+    
+    # Calculating the actual posteriors
+    likelihood = Literal_probability(data, groups)
+    for h in hypotheses:
+        Pt_d_h[h[0]] = likelihood[h[0]]/normalizing_dict[h[0]]
+        
+    
+    return Pt_d_h
 
 # Stealing a lot of this from wordlearning.py   
 # likelihood = 0 if classic, likelihood = 1 if pragmatic
@@ -83,6 +161,10 @@ def Posteriors(data, groups, likelihood): #Calculate the appropriate posteriors
     # Create a list of plausible hypotheses
     hypotheses = Plausible_Hypotheses(data, groups)
     
+    # Calculate the likelihoods
+    if likelihood == 1:
+        like_dic = Pragmatic_Likelihood(data, hypotheses, groups, len(data))
+    
     # Loop through hypotheses
     for hypothesis in hypotheses:
         # Define name and prior
@@ -92,13 +174,16 @@ def Posteriors(data, groups, likelihood): #Calculate the appropriate posteriors
         # If we're doing Xu and Tennenbaums work
         if likelihood == 0:
             hyp_like = Literal_likelihood(data, hypothesis)
+            posterior = hyp_like * prior
         
         # If we're doing Pragmatic Reasoning
         if likelihood == 1:
-            hyp_like = Pragmatic_Likelihood(data, hypothesis)
+            hyp_like = like_dic[hyp_meaning]
+            # Alternatively all hypotheses are equally likely
+            posterior = hyp_like * prior
+            #posterior = hyp_like
         
         # Do the posteriors
-        posterior = hyp_like * prior
         normalizing_constant = normalizing_constant + posterior
         posteriors[hyp_meaning] = posterior
         
