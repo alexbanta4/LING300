@@ -7,7 +7,7 @@ Created on Mon Feb 24 19:29:24 2020
 """
 import matplotlib.pyplot as plt
 import numpy as np
-import random
+import itertools
 
 
 # List of touples that are of the form ('Name', height, parent-height)
@@ -44,31 +44,39 @@ def data_is_consistent_with_hypothesis(data_point):
         return ['GG', 'JJ']
     
 def hypothesis_is_consistent_with_data(hypothesis): 
-    # Return list of data "groups" that are consistent with hypothesis
+    # Return list of data "objects" that are consistent with hypothesis
     if hypothesis == 'A':
-        return ['A']
+        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A')]
     elif hypothesis == 'D':
-        return ['A', 'D']
+        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D')]
     elif hypothesis == 'K':
-        return ['A', 'D', 'K']
+        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K')]
     elif hypothesis == 'P':
-        return ['A', 'D', 'K', 'P']
+        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), (8, 'P')]
     elif hypothesis == 'M':
-        return ['M']
+        return [(7, 'M'), (9, 'M')]
     elif hypothesis == 'R':
-        return ['A', 'D', 'K', 'P', 'M']
+        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
+                (8, 'P'), (7, 'M'), (9, 'M')]
     elif hypothesis == 'Z':
-        return ['A', 'D', 'K', 'P', 'M', 'Z']
+        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
+                (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z')]
     elif hypothesis == 'AA':
-        return ['A', 'D', 'K', 'P', 'M', 'Z', 'AA']
+        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
+                (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z'), (15, 'AA')]
     elif hypothesis == 'DD':
-        return ['A', 'D', 'K', 'P', 'M', 'Z', 'AA', 'DD']
+        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
+                (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z'), (15, 'AA'), (14, 'DD')]
     elif hypothesis == 'II':
-        return ['A', 'D', 'K', 'P', 'M', 'Z', 'AA', 'DD', 'II']
+        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
+                (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z'), (15, 'AA'), (14, 'DD'),\
+                (11, 'II')]
     elif hypothesis == 'GG':
-        return ['A', 'D', 'K', 'P', 'M', 'Z', 'AA', 'DD', 'GG']
+        return [(10, 'GG'), (13, 'GG')]
     elif hypothesis == 'JJ':
-        return ['A', 'D', 'K', 'P', 'M', 'Z', 'AA', 'DD', 'GG', 'II']
+        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
+                (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z'), (15, 'AA'), (14, 'DD'),\
+                (11, 'II'), (10, 'GG'), (13, 'GG')]
     
 def Plausible_Hypotheses(data, groups): # Creates a list of plausible hypotheses  
     # hypotheses have the form ('Name', height, parentheight)
@@ -100,19 +108,12 @@ def Possible_data(N, hypotheses):
     # I will not create all possible datasets because that would be way to many
     # I will create three possible datasets for each hypothesis?
     dataset = []
-    if N == 1:
-        dataset = [[(1, 'A')], [(2, 'D')], [(3, 'K')], [(4, 'P')], [(5,'M')], [(6,'Z')],\
-                   [(7,'AA')], [(8, 'DD')], [(9, 'GG')], [(10, 'II')]]
-    else:
-        counter = 10
-        for h in hypotheses:
-            selection = hypothesis_is_consistent_with_data(h[0])
-            for s in list(range(0,counter)):
-                s = []
-                for n in list(range(0, N)):
-                    s.append((n, selection[random.randrange(len(selection))]))
-                    if s not in dataset:
-                        dataset.append(s)
+    s = set()
+    for h in hypotheses:
+        s = s | set(hypothesis_is_consistent_with_data(h[0]))
+    s = list(s)
+    dataset = list(itertools.combinations(s, N))
+    
     return dataset
     
     
