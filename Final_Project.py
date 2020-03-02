@@ -10,11 +10,16 @@ import numpy as np
 import itertools
 
 
-# List of touples that are of the form ('Name', height, parent-height)
+# List of touples that are of the form ('Name', Height, Parent-Height)
 groups1 = [('A', 0.05, 0.06), ('D', 0.06, 0.21), ('K', 0.21, 0.22), ('P', 0.22, 0.25),\
           ('M', 0.21, 0.25), ('R', 0.25, 0.38), ('Z', 0.38, 0.39), ('AA', 0.39, 0.42),\
           ('DD', 0.42, 0.47), ('II', 0.47, 0.5), ('GG', 0.45, 0.5), ('JJ', 0.5, 0.9)]
+
+# Form ('Name', Likelihood, prior)
 # May want to define a second set of groups once we figure out the alternative likeihoods
+groups1 = [('A', 0.05, 0.01), ('D', 0.06, 0.15), ('K', 0.21, 0.01), ('P', 0.22, 0.03),\
+          ('M', 0.21, 0.04), ('R', 0.25, 0.13), ('Z', 0.38, 0.01), ('AA', 0.39, 0.03),\
+          ('DD', 0.42, 0.05), ('II', 0.47, 0.03), ('GG', 0.45, 0.05), ('JJ', 0.5, 0.4)]
 
 # Data that will be used, data of type (object number, 'Group')
 data = [(1, 'D'), (2, 'K'), (1, 'M')]
@@ -170,7 +175,9 @@ def Posteriors(data, groups, likelihood): #Calculate the appropriate posteriors
     for hypothesis in hypotheses:
         # Define name and prior
         hyp_meaning = hypothesis[0]	
-        prior = hypothesis[2] - hypothesis[1]
+        # For groups one uncomment next line
+        # prior = hypothesis[2] - hypothesis[1]
+        prior = hypothesis[2]
         
         # If we're doing Xu and Tennenbaums work
         if likelihood == 0:
