@@ -21,8 +21,15 @@ groups2 = [('A', 0.05, 0.01), ('D', 0.06, 0.15), ('K', 0.21, 0.01), ('P', 0.22, 
           ('M', 0.21, 0.04), ('R', 0.25, 0.13), ('Z', 0.38, 0.01), ('AA', 0.39, 0.03),\
           ('DD', 0.42, 0.05), ('II', 0.47, 0.03), ('GG', 0.45, 0.05), ('JJ', 0.5, 0.4)]
 
+# Experimenting with bias
+groups3 = [('A', 0.05, 0.01), ('D', 0.06, 0.15), ('K', 0.21, 0.01), ('P', 0.22, 0.03),\
+          ('M', 0.21, 0.04), ('R', 0.25, 10*0.13), ('Z', 0.38, 0.01), ('AA', 0.39, 0.03),\
+          ('DD', 0.42, 0.05), ('II', 0.47, 0.03), ('GG', 0.45, 0.05), ('JJ', 0.5, 0.4)]
+
+
 # Data that will be used, data of type (object number, 'Group')
-data = [(1, 'D'), (2, 'K'), (1, 'M')]
+data_basic = [(1, 'D'), (2, 'K'), (1, 'M')]
+data_spec = [(1, 'A'), (2, 'A'), (3, 'A')]
 # Maybe create function to take an object number and give it the right group label
 
 # Check which hypothesis data is consistent with 
@@ -48,40 +55,71 @@ def data_is_consistent_with_hypothesis(data_point):
     elif data_point == 'GG':
         return ['GG', 'JJ']
     
-def hypothesis_is_consistent_with_data(hypothesis): 
+def hypothesis_is_consistent_with_data(hypothesis, flag): 
     # Return list of data "objects" that are consistent with hypothesis
-    if hypothesis == 'A':
-        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A')]
-    elif hypothesis == 'D':
-        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D')]
-    elif hypothesis == 'K':
-        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K')]
-    elif hypothesis == 'P':
-        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), (8, 'P')]
-    elif hypothesis == 'M':
-        return [(7, 'M'), (9, 'M')]
-    elif hypothesis == 'R':
-        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
-                (8, 'P'), (7, 'M'), (9, 'M')]
-    elif hypothesis == 'Z':
-        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
-                (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z')]
-    elif hypothesis == 'AA':
-        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
-                (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z'), (15, 'AA')]
-    elif hypothesis == 'DD':
-        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
-                (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z'), (15, 'AA'), (14, 'DD')]
-    elif hypothesis == 'II':
-        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
-                (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z'), (15, 'AA'), (14, 'DD'),\
-                (11, 'II')]
-    elif hypothesis == 'GG':
-        return [(10, 'GG'), (13, 'GG')]
-    elif hypothesis == 'JJ':
-        return [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
-                (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z'), (15, 'AA'), (14, 'DD'),\
-                (11, 'II'), (10, 'GG'), (13, 'GG')]
+    if flag == 0:
+        # What if its all 15 objects
+        if hypothesis == 'A':
+            out = [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A')]
+        elif hypothesis == 'D':
+            out = [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D')]
+        elif hypothesis == 'K':
+            out = [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K')]
+        elif hypothesis == 'P':
+            out =[(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), (8, 'P')]
+        elif hypothesis == 'M':
+            out = [(7, 'M'), (9, 'M')]
+        elif hypothesis == 'R':
+            out = [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
+                    (8, 'P'), (7, 'M'), (9, 'M')]
+        elif hypothesis == 'Z':
+            out =[(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
+                    (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z')]
+        elif hypothesis == 'AA':
+            out =[(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
+                    (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z'), (15, 'AA')]
+        elif hypothesis == 'DD':
+            out = [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
+                    (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z'), (15, 'AA'), (14, 'DD')]
+        elif hypothesis == 'II':
+            out = [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
+                    (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z'), (15, 'AA'), (14, 'DD'),\
+                    (11, 'II')]
+        elif hypothesis == 'GG':
+            out = [(10, 'GG'), (13, 'GG')]
+        elif hypothesis == 'JJ':
+            out = [(1,'A'), (2, 'A'), (3, 'A'), (4, 'A'), (5, 'D'), (6,'K'), \
+                    (8, 'P'), (7, 'M'), (9, 'M'), (12, 'Z'), (15, 'AA'), (14, 'DD'),\
+                    (11, 'II'), (10, 'GG'), (13, 'GG')]
+    elif flag == 1:
+        # What if its actually test set with 8 objects
+        if hypothesis == 'A':
+            out = [(4, 'A')]
+        elif hypothesis == 'D':
+            out = [(4, 'A'), (5, 'D')]
+        elif hypothesis == 'K':
+            out = [(4, 'A'), (5, 'D')]
+        elif hypothesis == 'P':
+            out = [(4, 'A'), (5, 'D'), (8, 'P')]
+        elif hypothesis == 'M':
+            out = [(9, 'M')]
+        elif hypothesis == 'R':
+            out = [(4, 'A'), (5, 'D'), (8, 'P'), (9, 'M')]
+        elif hypothesis == 'Z':
+            out = [(4, 'A'), (5, 'D'), (8, 'P'), (9, 'M'), (12, 'Z')]
+        elif hypothesis == 'AA':
+            out = [(4, 'A'), (5, 'D'), (8, 'P'), (9, 'M'), (12, 'Z'), (15, 'AA')]
+        elif hypothesis == 'DD':
+            out = [(4, 'A'), (5, 'D'),(8, 'P'), (9, 'M'), (12, 'Z'), (15, 'AA'), (14, 'DD')]
+        elif hypothesis == 'II':
+            out = [(4, 'A'), (5, 'D'), (8, 'P'), (9, 'M'), (12, 'Z'), (15, 'AA'), (14, 'DD')]
+        elif hypothesis == 'GG':
+            out = [(13, 'GG')]
+        elif hypothesis == 'JJ':
+            out = [(4, 'A'), (5, 'D'), (8, 'P'), (9, 'M'), (12, 'Z'), (15, 'AA'), (14, 'DD'),\
+                    (13, 'GG')]
+    return out
+            
     
 def Plausible_Hypotheses(data, groups): # Creates a list of plausible hypotheses  
     # hypotheses have the form ('Name', height, parentheight)
@@ -115,7 +153,7 @@ def Possible_data(N, hypotheses):
     dataset = []
     s = set()
     for h in hypotheses:
-        s = s | set(hypothesis_is_consistent_with_data(h[0]))
+        s = s | set(hypothesis_is_consistent_with_data(h[0], 9))
     s = list(s)
     dataset = list(itertools.combinations(s, N))
     
