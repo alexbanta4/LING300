@@ -28,8 +28,10 @@ groups3 = [('A', 0.05, 0.01), ('D', 0.06, 0.15), ('K', 0.21, 0.01), ('P', 0.22, 
 
 
 # Data that will be used, data of type (object number, 'Group')
-data_basic = [(1, 'D'), (2, 'K'), (1, 'M')]
+data_single = [(1, 'A')]
+data_basic = [(1, 'D'), (6, 'K'), (7, 'M')]
 data_spec = [(1, 'A'), (2, 'A'), (3, 'A')]
+data_sup = [(1, 'A'), (10, 'GG'), (11, 'II')]
 # Maybe create function to take an object number and give it the right group label
 
 # Check which hypothesis data is consistent with 
@@ -153,7 +155,7 @@ def Possible_data(N, hypotheses):
     dataset = []
     s = set()
     for h in hypotheses:
-        s = s | set(hypothesis_is_consistent_with_data(h[0], 9))
+        s = s | set(hypothesis_is_consistent_with_data(h[0], 0))
     s = list(s)
     dataset = list(itertools.combinations(s, N))
     
@@ -275,4 +277,31 @@ def Model_averaging(data, groups, likelihood_flag): #Do model averaging and crea
     
     return [p_spec+p_dog+p_animal, p_dog+p_animal, p_animal]
     
-    
+# Creating specific figures for the paper
+sub = []
+basic = []
+sup = []
+flag = 1
+single = Model_averaging(data_single, groups2, flag)
+spec = Model_averaging(data_spec, groups2, flag)
+bas = Model_averaging(data_basic, groups2, flag)
+gen = Model_averaging(data_sup, groups2, flag)
+comp = [single, spec, bas, gen]
+
+for m in comp:
+    sub.append( m[0])
+    basic.append( m[1])
+    sup.append(m[2])
+
+# Plotting
+ind = np.arange(4)
+fig, ax = plt.subplots()
+w = 0.25
+colors = plt.cm.Greys(np.linspace(0, 1, 4))
+ax.bar(ind - w, sub, color = colors[3], width = w)
+ax.bar(ind , basic, color = colors[2], width = w)
+ax.bar(ind + w, sup, color = colors[1], width = w)
+plt.xticks(ind, ('1', '3 sub.', '3 basic', '3 super.'))
+plt.ylabel('Probability of Generalization')
+ax.legend(labels = ['sub.', 'basic', 'super.'])
+plt.show()
